@@ -1,73 +1,77 @@
-# React + TypeScript + Vite
+# BrainBin 🧠📦
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **React-based web application** built with [pnpm](https://pnpm.io/) for faster, disk-efficient dependency management.
+BrainBin is designed to help users **collect, organize, and manage their ideas, tasks, or resources** in a simple and efficient way.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- ⚡ Built with **React + TypeScript** for type-safe development
+- 📦 Uses **pnpm** for fast, reliable package management
+- 🎨 Styled with **Tailwind CSS** (if applicable, update if you’re using something else)
+- 🛠 Easy project structure for scalability
+- 🔄 Hot reloading during development
+- ✅ Linting and formatting support (ESLint/Prettier)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📂 Project Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. Clone the repository
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/jhshakil/brainbin.git
+cd brainbin
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install dependencies with pnpm
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
 ```
+
+### 3. Start development server
+
+```bash
+pnpm dev
+```
+
+The app will be running at:
+👉 `http://localhost:5173/`
+
+### 4. Build for production
+
+```bash
+pnpm build
+```
+
+### 5. Preview production build
+
+```bash
+pnpm preview
+```
+
+---
+
+## 📖 Scripts
+
+| Command        | Description                      |
+| -------------- | -------------------------------- |
+| `pnpm dev`     | Start development server         |
+| `pnpm build`   | Build production-ready app       |
+| `pnpm preview` | Preview the production build     |
+| `pnpm lint`    | Run ESLint checks                |
+| `pnpm format`  | Run Prettier formatting (if set) |
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+## 👨‍💻 Author
+
+Developed by **[Jahid Hasan Shakil](https://github.com/jhshakil)**
