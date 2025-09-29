@@ -11,8 +11,7 @@ BrainBin is designed to help users **collect, organize, and manage their ideas, 
 - 📦 Uses **pnpm** for fast, reliable package management
 - 🎨 Styled with **Tailwind CSS** (if applicable, update if you’re using something else)
 - 🛠 Easy project structure for scalability
-- 🔄 Hot reloading during development
-- ✅ Linting and formatting support (ESLint/Prettier)
+- ✅ Linting and formatting support (ESLint)
 
 ---
 
@@ -74,4 +73,4 @@ This project is licensed under the **MIT License**.
 
 ## 👨‍💻 Author
 
-Developed by **[Jahid Hasan Shakil](https://github.com/jhshakil)**
+Developed by **[Md Jahid Hasan](https://github.com/jhshakil)**
