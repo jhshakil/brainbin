@@ -1,12 +1,9 @@
 import {
-  AudioWaveform,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  SquareTerminal,
+  ClipboardList,
+  FolderGit,
+  LayoutDashboard,
+  LayoutList,
+  Users,
 } from "lucide-react";
 
 import {
@@ -18,74 +15,42 @@ import {
 } from "@/components/ui/sidebar";
 
 import NavMain from "./NavMain";
-import TeamSwitcher from "./TeamSwitcher";
-import NavProject from "./NavProject";
 import NavUser from "./NavUser";
+import SidebarLogo from "./SidebarLogo";
 
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Jahid",
+    email: "jhshakil11275@gmail.com",
+    avatar: "",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
+
   navMain: [
     {
       title: "Dashboard",
       url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        { title: "Overview", url: "#" },
-        { title: "Recent Activity", url: "#" },
-        { title: "Reports", url: "#" },
-      ],
+      icon: LayoutDashboard,
     },
     {
-      title: "Tasks",
+      title: "All Tasks",
       url: "#",
-      icon: Bot,
-      items: [
-        { title: "All Tasks", url: "#" },
-        { title: "My Tasks", url: "#" },
-        { title: "Completed", url: "#" },
-        { title: "Archived", url: "#" },
-      ],
-    },
-  ],
-
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      icon: LayoutList,
     },
     {
-      name: "Sales & Marketing",
+      title: "My Tasks",
       url: "#",
-      icon: PieChart,
+      icon: ClipboardList,
     },
     {
-      name: "Travel",
+      title: "Projects",
       url: "#",
-      icon: Map,
+      icon: FolderGit,
+    },
+    {
+      title: "Team Members",
+      url: "#",
+      icon: Users,
     },
   ],
 };
@@ -94,11 +59,10 @@ const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarLogo />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProject projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
