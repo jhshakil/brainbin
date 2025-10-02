@@ -1,6 +1,5 @@
 import {
   ClipboardList,
-  FolderGit,
   LayoutDashboard,
   LayoutList,
   Users,
@@ -29,27 +28,23 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/",
       icon: LayoutDashboard,
     },
     {
       title: "All Tasks",
-      url: "#",
+      url: "/all-tasks",
       icon: LayoutList,
     },
     {
       title: "My Tasks",
-      url: "#",
+      url: "/my-tasks",
       icon: ClipboardList,
     },
-    {
-      title: "Projects",
-      url: "#",
-      icon: FolderGit,
-    },
+
     {
       title: "Team Members",
-      url: "#",
+      url: "/team-members",
       icon: Users,
     },
   ],

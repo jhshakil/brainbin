@@ -21,7 +21,9 @@ export default function MainLayout() {
             />
           </div>
         </header>
-        <Outlet />
+        <div className="p-4">
+          <Outlet />
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
