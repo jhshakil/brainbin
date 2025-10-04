@@ -21,6 +21,7 @@ const AllTasks = () => {
 
   return (
     <div>
+      <h1 className="text-3xl font-bold text-center">All Task</h1>
       <TaskDataTable
         tasks={allTasks.data}
         setUpdateState={setUpdateState}

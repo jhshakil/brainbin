@@ -73,6 +73,21 @@ export const updateTask = async (payload: Partial<TTask>): Promise<any> => {
   }
 };
 
+export const updateTaskStatus = async (
+  payload: Partial<TTask>
+): Promise<any> => {
+  try {
+    const { data } = await axiosInstance.patch(
+      `/task/${payload._id}/status`,
+      payload
+    );
+
+    return data;
+  } catch (error: any) {
+    throw new Error("Failed to update status");
+  }
+};
+
 export const DeleteTask = async (id: string): Promise<any> => {
   try {
     const { data } = await axiosInstance.delete(`/task/${id}`);

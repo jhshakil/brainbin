@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
 import {
+  type CellContext,
   type ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -27,12 +29,14 @@ import { toast } from "sonner";
 import type { TUserData, TUserRole, TUserStatus } from "@/types/auth";
 import DeleteMemberConfirmation from "./DeleteMemberConfirmation";
 import { updateMemberRole, updateMemberStatus } from "@/services/AuthService";
+import { useAuth } from "@/context/auth.provider";
 
 type Props = {
   users: TUserData[];
 };
 
 const MembersTable = ({ users }: Props) => {
+  const { user } = useAuth();
   const [userData, setUserData] = useState<TUserData[]>(users);
 
   // update status or role
@@ -78,58 +82,76 @@ const MembersTable = ({ users }: Props) => {
       accessorKey: "email",
       header: "Email",
     },
-    {
-      accessorKey: "role",
-      header: "Role",
-      cell: ({ row }) => (
-        <Select
-          value={row.original.role}
-          onValueChange={(val: TUserRole) =>
-            updateUserRole(row.original._id as string, val)
-          }
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="admin">Admin</SelectItem>
-            <SelectItem value="user">User</SelectItem>
-          </SelectContent>
-        </Select>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <Select
-          value={row.original.status}
-          onValueChange={(val: TUserStatus) =>
-            updateUserStatus(row.original._id as string, val)
-          }
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="blocked">Blocked</SelectItem>
-          </SelectContent>
-        </Select>
-      ),
-    },
-    {
-      id: "actions",
-      header: () => <div className="text-right pr-4">Actions</div>,
-      cell: ({ row }) => (
-        <div className="flex justify-end">
-          <DeleteMemberConfirmation
-            memberId={row.original._id as string}
-            memberName={row.original.name}
-          />
-        </div>
-      ),
-    },
+    ...(user?.role === "admin"
+      ? [
+          {
+            accessorKey: "role",
+            header: "Role",
+            cell: (context: CellContext<TUserData, any>) => {
+              const user = context.row.original;
+              return (
+                <Select
+                  value={user.role}
+                  onValueChange={(val: TUserRole) =>
+                    updateUserRole(user._id as string, val)
+                  }
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="user">User</SelectItem>
+                  </SelectContent>
+                </Select>
+              );
+            },
+          },
+          {
+            accessorKey: "status",
+            header: "Status",
+            cell: (context: CellContext<TUserData, any>) => {
+              const user = context.row.original;
+              return (
+                <Select
+                  value={user.status}
+                  onValueChange={(val: TUserStatus) =>
+                    updateUserStatus(user._id as string, val)
+                  }
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="blocked">Blocked</SelectItem>
+                  </SelectContent>
+                </Select>
+              );
+            },
+          },
+          {
+            id: "actions",
+            header: () => <div className="text-right pr-4">Actions</div>,
+            cell: (context: CellContext<TUserData, any>) => {
+              const user = context.row.original;
+              return (
+                <div className="flex justify-end">
+                  <DeleteMemberConfirmation
+                    memberId={user._id as string}
+                    memberName={user.name}
+                  />
+                </div>
+              );
+            },
+          },
+        ]
+      : [
+          {
+            accessorKey: "role",
+            header: "Role",
+          },
+        ]),
   ];
 
   const table = useReactTable({

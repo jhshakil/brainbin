@@ -5,9 +5,22 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Outlet } from "react-router";
+import { useAuth } from "@/context/auth.provider";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
 
 export default function MainLayout() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user]);
+
+  if (!user) return null; // or a loader
+
   return (
     <SidebarProvider>
       <AppSidebar />

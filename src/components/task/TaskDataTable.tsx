@@ -2,6 +2,7 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import {
+  type CellContext,
   type ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -48,7 +49,7 @@ import UpdateTaskForm from "../form/UpdateTaskForm";
 import type { TStatus, TTask } from "@/types/task";
 import { useAuth } from "@/context/auth.provider";
 import DeleteTaskConfirmation from "./DeleteTaskConfirmation";
-import { updateTask } from "@/services/TaskServices";
+import { updateTaskStatus } from "@/services/TaskServices";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { debounce } from "@/lib/utils";
@@ -60,7 +61,7 @@ type Props = {
 };
 
 const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
-  const { allUsers } = useAuth();
+  const { allUsers, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [taskData, setTaskData] = useState<TTask[]>(tasks);
 
@@ -69,15 +70,15 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
   const [searchInput, setSearchInput] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 5; // default page size
+  const limit = 10;
 
-  const updateTaskStatus = async (taskId: string, newStatus: TStatus) => {
+  const updateStatus = async (taskId: string, newStatus: TStatus) => {
     setTaskData((prev) =>
       prev.map((task) =>
         task._id === taskId ? { ...task, status: newStatus } : task
       )
     );
-    const resData = await updateTask({ _id: taskId, status: newStatus });
+    const resData = await updateTaskStatus({ _id: taskId, status: newStatus });
     if (resData.success) {
       toast.success("Task status updated successfully");
       setUpdateState(true);
@@ -172,9 +173,7 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         return (
           <Select
             value={task.status}
-            onValueChange={(value: TStatus) =>
-              updateTaskStatus(task._id, value)
-            }
+            onValueChange={(value: TStatus) => updateStatus(task._id, value)}
           >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Select status" />
@@ -210,34 +209,45 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         );
       },
     },
-    {
-      id: "actions",
-      header: () => <div className="text-right pr-4">Actions</div>,
-      cell: ({ row }) => {
-        const task = row.original;
-        return (
-          <div className="flex justify-end pr-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <UpdateTaskForm task={task} setUpdateState={setUpdateState} />
-                <DropdownMenuSeparator />
-                <DeleteTaskConfirmation
-                  taskId={task._id}
-                  taskTitle={task.title}
-                  setUpdateState={setUpdateState}
-                />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        );
-      },
-    },
+    // Actions column only if user is admin
+    ...(user?.role === "admin"
+      ? [
+          {
+            id: "actions",
+            header: () => <div className="text-right pr-4">Actions</div>,
+            cell: (context: CellContext<TTask, any>) => {
+              const task = context.row.original;
+              return (
+                <div className="flex justify-end pr-4">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="h-8 w-8 p-0 cursor-pointer"
+                      >
+                        <MoreHorizontal />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <UpdateTaskForm
+                        task={task}
+                        setUpdateState={setUpdateState}
+                      />
+                      <DropdownMenuSeparator />
+                      <DeleteTaskConfirmation
+                        taskId={task._id}
+                        taskTitle={task.title}
+                        setUpdateState={setUpdateState}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   const table = useReactTable({
