@@ -52,6 +52,7 @@ export const getMyTask = async ({
 
 export const createTask = async (payload: Partial<TTask>): Promise<any> => {
   try {
+    console.log(payload);
     const { data } = await axiosInstance.post(
       `${import.meta.env.VITE_BASE_URL}/task`,
       payload

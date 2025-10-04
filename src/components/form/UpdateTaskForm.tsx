@@ -42,6 +42,7 @@ const FormSchema = z.object({
   details: z.string(),
   assignTo: z.string(),
   _id: z.string().optional(),
+  dueDate: z.string(),
 });
 
 type Props = {
@@ -59,6 +60,7 @@ const UpdateTaskForm = ({ task, setUpdateState }: Props) => {
       title: task.title || "",
       details: task.details || "",
       assignTo: task.assignTo || "",
+      dueDate: task.dueDate || "",
     },
   });
 
@@ -150,6 +152,26 @@ const UpdateTaskForm = ({ task, setUpdateState }: Props) => {
                       ))}
                     </SelectContent>
                   </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      placeholder="Select date & time"
+                      value={field.value || ""} // controlled input
+                      onChange={field.onChange}
+                      className="bg-background"
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>

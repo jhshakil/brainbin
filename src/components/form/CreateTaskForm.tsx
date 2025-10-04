@@ -41,6 +41,7 @@ const FormSchema = z.object({
   }),
   details: z.string(),
   assignTo: z.string(),
+  dueDate: z.string(),
 });
 
 type Props = {
@@ -57,10 +58,12 @@ const CreateTaskForm = ({ setUpdateState }: Props) => {
       title: "",
       details: "",
       assignTo: "",
+      dueDate: "",
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(data);
     const resData = await createTask(data);
     if (resData?.success) {
       setUpdateState(true);
@@ -142,6 +145,26 @@ const CreateTaskForm = ({ setUpdateState }: Props) => {
                       ))}
                     </SelectContent>
                   </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      placeholder="Select date & time"
+                      value={field.value || ""} // controlled input
+                      onChange={field.onChange}
+                      className="bg-background"
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>

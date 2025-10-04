@@ -4,6 +4,7 @@ export type TTask = {
   details: string;
   status: TStatus;
   assignTo: string;
+  dueDate: string;
 };
 
 export type TTasks = {

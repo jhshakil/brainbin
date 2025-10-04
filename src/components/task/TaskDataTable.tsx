@@ -209,6 +209,21 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         );
       },
     },
+    {
+      accessorKey: "dueDate",
+      header: "Due Date",
+      cell: ({ row }) => {
+        const task = row.original.dueDate;
+
+        return (
+          <div>
+            <p className="text-sm text-muted-foreground">
+              {task ? new Date(task).toLocaleString() : "N/A"}
+            </p>
+          </div>
+        );
+      },
+    },
     // Actions column only if user is admin
     ...(user?.role === "admin"
       ? [
@@ -263,7 +278,11 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     <div className="w-full">
       {/* Toolbar */}
       <div className="flex items-center justify-between py-4 gap-2">
-        <CreateTaskForm setUpdateState={setUpdateState} />
+        {user?.role === "admin" ? (
+          <CreateTaskForm setUpdateState={setUpdateState} />
+        ) : (
+          <div></div>
+        )}
         <div className="flex gap-2">
           <Input
             placeholder="Search by title..."

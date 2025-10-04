@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { getAllUsers, getCurrentUser } from "@/services/AuthService";
 import type { TUserData } from "@/types/auth";
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useReducer } from "react";
 
 // ---------- State ----------
 interface AuthState {
@@ -30,7 +29,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 interface AuthContextType extends AuthState {
   setUser: (user: TUserData | null) => void;
   setAllUsers: (users: TUserData[]) => void;
-  fetchAllUsers: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,22 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     allUsers: [], // ✅ initial
   });
 
-  const fetchUser = async () => {
-    const user = await getCurrentUser();
-    setUser(user);
-  };
-  const fetchAllUsers = async () => {
-    const all = await getAllUsers();
-    if (all.success) {
-      setAllUsers(all?.data);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-    fetchAllUsers();
-  }, []);
-
   const setUser = (user: TUserData | null) =>
     dispatch({ type: "SET_USER", payload: user });
 
@@ -65,9 +47,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     dispatch({ type: "SET_ALL_USER", payload: users });
 
   return (
-    <AuthContext.Provider
-      value={{ ...state, setUser, setAllUsers, fetchAllUsers }}
-    >
+    <AuthContext.Provider value={{ ...state, setUser, setAllUsers }}>
       {children}
     </AuthContext.Provider>
   );

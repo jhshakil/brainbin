@@ -6,20 +6,33 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/auth.provider";
+import { getAllUsers, getCurrentUser } from "@/services/AuthService";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 
 export default function MainLayout() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { setUser, setAllUsers } = useAuth();
 
   useEffect(() => {
-    if (!user) {
+    fetchUser();
+    fetchAllUsers();
+  }, []);
+
+  const fetchUser = async () => {
+    const user = await getCurrentUser();
+    if (user?.email) {
+      setUser(user);
+    } else {
       navigate("/login");
     }
-  }, [user]);
-
-  if (!user) return null; // or a loader
+  };
+  const fetchAllUsers = async () => {
+    const all = await getAllUsers();
+    if (all.success) {
+      setAllUsers(all?.data);
+    }
+  };
 
   return (
     <SidebarProvider>
