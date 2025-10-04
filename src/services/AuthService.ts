@@ -103,3 +103,15 @@ export const resetPassword = async (payload: {
     throw new Error("User not found");
   }
 };
+
+export const getAllUsers = async () => {
+  try {
+    const { data } = await axiosInstance.get(
+      `${import.meta.env.VITE_BASE_URL}/auth/users`
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

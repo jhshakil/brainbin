@@ -30,6 +30,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useTask } from "@/context/task.provider";
+import { useState } from "react";
+import { createTask } from "@/services/TaskServices";
+import { useAuth } from "@/context/auth.provider";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 const FormSchema = z.object({
   title: z.string().min(2, {
@@ -40,6 +45,10 @@ const FormSchema = z.object({
 });
 
 const CreateTaskForm = () => {
+  const { allUsers } = useAuth();
+  const { fetchTasks } = useTask();
+  const [open, setOpen] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -49,18 +58,18 @@ const CreateTaskForm = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const resData = await createTask(data);
+    if (resData?.success) {
+      fetchTasks();
+      setOpen(false);
+      form.reset();
+      toast.success("Task deleted successfully");
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus /> Create Task
@@ -69,6 +78,7 @@ const CreateTaskForm = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Task</DialogTitle>
+          <DialogDescription className="hidden"></DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -123,13 +133,11 @@ const CreateTaskForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      {allUsers?.map((user) => (
+                        <SelectItem key={user._id} value={user._id as string}>
+                          {user.email}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 

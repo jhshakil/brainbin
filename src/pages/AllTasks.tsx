@@ -1,9 +1,11 @@
-import TaskDataTable from "@/components/TaskDataTable";
+import TaskDataTable from "@/components/task/TaskDataTable";
+import { useTask } from "@/context/task.provider";
 
 const AllTasks = () => {
+  const { allTasks } = useTask();
   return (
     <div>
-      <TaskDataTable />
+      <TaskDataTable tasks={allTasks} />
     </div>
   );
 };
