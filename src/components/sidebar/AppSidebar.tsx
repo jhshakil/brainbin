@@ -1,9 +1,4 @@
-import {
-  ClipboardList,
-  LayoutDashboard,
-  LayoutList,
-  Users,
-} from "lucide-react";
+import { ClipboardList, LayoutList, Users } from "lucide-react";
 
 import {
   Sidebar,
@@ -21,13 +16,8 @@ import SidebarLogo from "./SidebarLogo";
 const data = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "/",
-      icon: LayoutDashboard,
-    },
-    {
       title: "All Tasks",
-      url: "/all-tasks",
+      url: "/",
       icon: LayoutList,
     },
     {

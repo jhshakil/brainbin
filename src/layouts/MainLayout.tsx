@@ -12,27 +12,38 @@ import { Outlet, useNavigate } from "react-router";
 
 export default function MainLayout() {
   const navigate = useNavigate();
-  const { setUser, setAllUsers } = useAuth();
+  const { user, setUser, setAllUsers } = useAuth();
 
   useEffect(() => {
-    fetchUser();
-    fetchAllUsers();
-  }, []);
+    // Fetch current user only if user is not set
+    if (!user) {
+      fetchUser();
+      fetchAllUsers();
+    }
+  }, [user]); // <- watch user changes
 
   const fetchUser = async () => {
-    const user = await getCurrentUser();
-    if (user?.email) {
-      setUser(user);
+    const userData = await getCurrentUser();
+    if (userData?.email) {
+      setUser(userData);
     } else {
       navigate("/login");
     }
   };
+
   const fetchAllUsers = async () => {
     const all = await getAllUsers();
     if (all.success) {
       setAllUsers(all?.data);
     }
   };
+
+  // If user becomes null (logged out), redirect
+  useEffect(() => {
+    if (user === null) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   return (
     <SidebarProvider>

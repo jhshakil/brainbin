@@ -12,6 +12,9 @@ BrainBin is designed to help users **collect, organize, and manage their ideas, 
 - 🎨 Styled with **Tailwind CSS** (if applicable, update if you’re using something else)
 - 🛠 Easy project structure for scalability
 - ✅ Linting and formatting support (ESLint)
+- 🔐 **Role-based access control**:
+  - **Admin**: Can create, update, and delete **tasks** and **users**
+  - **User**: Can view tasks and update their **own task status** only
 
 ---
 

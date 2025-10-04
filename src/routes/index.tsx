@@ -1,8 +1,8 @@
 import MainLayout from "@/layouts/MainLayout";
 import AllTasks from "@/pages/AllTasks";
-import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
 import MyTasks from "@/pages/MyTasks";
+import NotFound from "@/pages/NotFound";
 import Signup from "@/pages/Signup";
 import TeamMembers from "@/pages/TeamMembers";
 import { createBrowserRouter } from "react-router";
@@ -14,12 +14,9 @@ const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
-      },
-      {
-        path: "/all-tasks",
         element: <AllTasks />,
       },
+
       {
         path: "/my-tasks",
         element: <MyTasks />,
@@ -37,6 +34,10 @@ const routes = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

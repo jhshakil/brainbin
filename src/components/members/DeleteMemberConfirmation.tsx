@@ -10,7 +10,7 @@ import {
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteUser } from "@/services/AuthService";
+import { deleteUser, getAllUsers } from "@/services/AuthService";
 import { useAuth } from "@/context/auth.provider";
 
 type Props = {
@@ -19,7 +19,7 @@ type Props = {
 };
 
 const DeleteMemberConfirmation = ({ memberId, memberName }: Props) => {
-  const { fetchAllUsers } = useAuth();
+  const { setAllUsers } = useAuth();
   const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -30,6 +30,14 @@ const DeleteMemberConfirmation = ({ memberId, memberName }: Props) => {
       toast.success("Member deleted successfully");
     }
   };
+
+  const fetchAllUsers = async () => {
+    const all = await getAllUsers();
+    if (all.success) {
+      setAllUsers(all?.data);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

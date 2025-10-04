@@ -1,12 +1,12 @@
 import { type LucideIcon } from "lucide-react";
-
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router";
+import { NavLink } from "react-router";
+import { cn } from "@/lib/utils";
 
 type Props = {
   items: {
@@ -22,15 +22,20 @@ const NavMain = ({ items }: Props) => {
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <Link to={item.url}>
-              <SidebarMenuButton
-                tooltip={item.title}
-                className="cursor-pointer"
-              >
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </Link>
+            <NavLink to={item.url}>
+              {({ isActive }) => (
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  className={cn(
+                    "cursor-pointer flex items-center gap-2 hover:bg-primary hover:text-white",
+                    isActive ? "bg-primary text-white" : ""
+                  )}
+                >
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              )}
+            </NavLink>
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

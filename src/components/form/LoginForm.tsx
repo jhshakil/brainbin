@@ -58,8 +58,28 @@ const LoginForm = () => {
     }
   }
 
+  const { setValue } = form;
+
+  const userLoginData = () => {
+    setValue("email", "j2@gmail.com");
+    setValue("password", "12345678");
+  };
+
+  const adminLoginData = () => {
+    setValue("email", "j1@gmail.com");
+    setValue("password", "12345678");
+  };
+
   return (
     <div>
+      <div className="flex gap-2 mb-4">
+        <Button onClick={userLoginData} variant="outline">
+          User
+        </Button>
+        <Button onClick={adminLoginData} variant="outline">
+          Admin
+        </Button>
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

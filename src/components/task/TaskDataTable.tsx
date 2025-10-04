@@ -122,12 +122,12 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
   const columns: ColumnDef<TTask>[] = [
     {
       accessorKey: "title",
-      header: () => <div className="pl-4 text-left">Title</div>,
-      cell: ({ row }) => <div className="pl-4">{row.original.title}</div>,
+      header: () => <div className="px-4 text-left">Title</div>,
+      cell: ({ row }) => <div className="px-4">{row.original.title}</div>,
     },
     {
       accessorKey: "details",
-      header: "Details",
+      header: () => <div className="px-4">Details</div>,
       cell: ({ row }) => {
         const task = row.original;
 
@@ -139,7 +139,7 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
           : task.details;
 
         return (
-          <div className="flex items-center">
+          <div className="flex items-center px-4">
             <span>{truncated} </span>
             {isLong && (
               <span
@@ -167,7 +167,7 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: () => <div className="px-4">Status</div>,
       cell: ({ row }) => {
         const task = row.original;
         return (
@@ -175,7 +175,7 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
             value={task.status}
             onValueChange={(value: TStatus) => updateStatus(task._id, value)}
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[140px] px-4">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
@@ -189,7 +189,7 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     },
     {
       accessorKey: "assignTo",
-      header: "Assign To",
+      header: () => <div className="px-4">Assign To</div>,
       cell: ({ row }) => {
         const assignedUser = allUsers?.find(
           (user) => user._id === row.original.assignTo
@@ -200,7 +200,7 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         }
 
         return (
-          <div>
+          <div className="px-4">
             <p className="font-medium">{assignedUser.name}</p>
             <p className="text-sm text-muted-foreground">
               {assignedUser.email}
@@ -211,12 +211,12 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     },
     {
       accessorKey: "dueDate",
-      header: "Due Date",
+      header: () => <div className="px-4">Due Date</div>,
       cell: ({ row }) => {
         const task = row.original.dueDate;
 
         return (
-          <div>
+          <div className="px-4">
             <p className="text-sm text-muted-foreground">
               {task ? new Date(task).toLocaleString() : "N/A"}
             </p>
@@ -229,11 +229,11 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
       ? [
           {
             id: "actions",
-            header: () => <div className="text-right pr-4">Actions</div>,
+            header: () => <div className="text-right px-4">Actions</div>,
             cell: (context: CellContext<TTask, any>) => {
               const task = context.row.original;
               return (
-                <div className="flex justify-end pr-4">
+                <div className="flex justify-end px-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -277,13 +277,13 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
   return (
     <div className="w-full">
       {/* Toolbar */}
-      <div className="flex items-center justify-between py-4 gap-2">
+      <div className="lg:flex lg:items-center lg:justify-between lg:flex-row py-4 gap-2">
         {user?.role === "admin" ? (
           <CreateTaskForm setUpdateState={setUpdateState} />
         ) : (
           <div></div>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-5 lg:mt-0">
           <Input
             placeholder="Search by title..."
             value={searchInput}
