@@ -15,22 +15,18 @@ export default function MainLayout() {
   const { user, setUser, setAllUsers } = useAuth();
 
   useEffect(() => {
-    // Fetch current user only if user is not set
-    if (!user) {
-      fetchUser();
-      fetchAllUsers();
-    }
-  }, [user]); // <- watch user changes
+    fetchUser();
+    fetchAllUsers();
+  }, []);
 
   const fetchUser = async () => {
-    const userData = await getCurrentUser();
-    if (userData?.email) {
-      setUser(userData);
+    const user = await getCurrentUser();
+    if (user?.email) {
+      setUser(user);
     } else {
       navigate("/login");
     }
   };
-
   const fetchAllUsers = async () => {
     const all = await getAllUsers();
     if (all.success) {
@@ -38,12 +34,9 @@ export default function MainLayout() {
     }
   };
 
-  // If user becomes null (logged out), redirect
-  useEffect(() => {
-    if (user === null) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
+  if (!user) {
+    navigate("/login");
+  }
 
   return (
     <SidebarProvider>
