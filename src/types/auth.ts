@@ -3,5 +3,9 @@ export type TUserData = {
   _id?: string;
   email: string;
   name: string;
-  role: string;
+  role?: TUserRole;
+  status?: TUserStatus;
 };
+
+export type TUserStatus = "active" | "blocked";
+export type TUserRole = "user" | "admin" | "superAdmin";

@@ -34,7 +34,6 @@ import { useAuth } from "@/context/auth.provider";
 import { updateTask } from "@/services/TaskServices";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
 import { useState } from "react";
-import { useTask } from "@/context/task.provider";
 
 const FormSchema = z.object({
   title: z.string().min(2, {
@@ -47,11 +46,11 @@ const FormSchema = z.object({
 
 type Props = {
   task: TTask;
+  setUpdateState: (value: boolean) => void;
 };
 
-const UpdateTaskForm = ({ task }: Props) => {
+const UpdateTaskForm = ({ task, setUpdateState }: Props) => {
   const { allUsers } = useAuth();
-  const { fetchTasks } = useTask();
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -69,7 +68,7 @@ const UpdateTaskForm = ({ task }: Props) => {
     const resData = await updateTask(data);
     if (resData.success) {
       toast.success("Task updated successfully!");
-      fetchTasks();
+      setUpdateState(true);
       setOpen(false);
     } else {
       toast.error("Failed to update task.");

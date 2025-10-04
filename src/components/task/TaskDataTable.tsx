@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
 
 import {
@@ -44,18 +45,34 @@ import {
 
 import CreateTaskForm from "../form/CreateTaskForm";
 import UpdateTaskForm from "../form/UpdateTaskForm";
-import type { TTask } from "@/types/task";
+import type { TStatus, TTask } from "@/types/task";
 import { useAuth } from "@/context/auth.provider";
 import DeleteTaskConfirmation from "./DeleteTaskConfirmation";
+import { updateTask } from "@/services/TaskServices";
+import { toast } from "sonner";
 
 type Props = {
   tasks: TTask[];
+  setUpdateState: (value: boolean) => void;
+  setAllQuery?: (query: Record<string, any>) => void;
 };
 
-const TaskDataTable = ({ tasks }: Props) => {
+const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
   const { allUsers } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [taskData, setTaskData] = useState<TTask[]>(tasks);
+
+  const updateTaskStatus = async (taskId: string, newStatus: TStatus) => {
+    setTaskData((prev) =>
+      prev.map((task) =>
+        task._id === taskId ? { ...task, status: newStatus } : task
+      )
+    );
+    const resData = await updateTask({ _id: taskId, status: newStatus });
+    if (resData.success) {
+      toast.success("Task status updated successfully");
+    }
+  };
 
   useEffect(() => {
     if (tasks) {
@@ -70,7 +87,7 @@ const TaskDataTable = ({ tasks }: Props) => {
       header: () => <div className="pl-4 text-left">Title</div>,
       cell: ({ row }) => {
         const task = row.original;
-        return <div className="font-medium text-primary">{task.title}</div>;
+        return <div className="pl-4">{task.title}</div>;
       },
     },
 
@@ -122,7 +139,12 @@ const TaskDataTable = ({ tasks }: Props) => {
       cell: ({ row }) => {
         const task = row.original;
         return (
-          <Select defaultValue={task.status}>
+          <Select
+            value={task.status}
+            onValueChange={(value: TStatus) =>
+              updateTaskStatus(task._id, value)
+            }
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
@@ -178,7 +200,7 @@ const TaskDataTable = ({ tasks }: Props) => {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
                 {/* Update Dialog */}
-                <UpdateTaskForm task={task} />
+                <UpdateTaskForm task={task} setUpdateState={setUpdateState} />
 
                 <DropdownMenuSeparator />
 
@@ -186,6 +208,7 @@ const TaskDataTable = ({ tasks }: Props) => {
                 <DeleteTaskConfirmation
                   taskId={task._id}
                   taskTitle={task.title}
+                  setUpdateState={setUpdateState}
                 />
               </DropdownMenuContent>
             </DropdownMenu>

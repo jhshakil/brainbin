@@ -7,42 +7,35 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { DeleteTask } from "@/services/TaskServices";
 import { toast } from "sonner";
+import { deleteUser } from "@/services/AuthService";
+import { useAuth } from "@/context/auth.provider";
 
 type Props = {
-  taskId: string;
-  taskTitle: string;
-  setUpdateState: (value: boolean) => void;
+  memberId: string;
+  memberName: string;
 };
 
-const DeleteTaskConfirmation = ({
-  taskId,
-  taskTitle,
-  setUpdateState,
-}: Props) => {
+const DeleteMemberConfirmation = ({ memberId, memberName }: Props) => {
+  const { fetchAllUsers } = useAuth();
   const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
-    const resData = await DeleteTask(taskId);
+    const resData = await deleteUser(memberId);
     if (resData?.success) {
-      setUpdateState(true);
+      fetchAllUsers();
       setOpen(false);
-      toast.success("Task deleted successfully");
+      toast.success("Member deleted successfully");
     }
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <DropdownMenuItem
-          className="text-red-600 cursor-pointer"
-          onSelect={(e) => e.preventDefault()}
-        >
+        <Button variant="destructive" size="sm">
           Delete
-        </DropdownMenuItem>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -50,7 +43,7 @@ const DeleteTaskConfirmation = ({
           <DialogDescription className="hidden"></DialogDescription>
         </DialogHeader>
         <p>
-          Are you sure you want to delete <strong>{taskTitle}</strong>?
+          Are you sure you want to delete <strong>{memberName}</strong>?
         </p>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
@@ -65,4 +58,4 @@ const DeleteTaskConfirmation = ({
   );
 };
 
-export default DeleteTaskConfirmation;
+export default DeleteMemberConfirmation;

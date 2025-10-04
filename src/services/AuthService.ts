@@ -5,6 +5,7 @@ import axiosInstance from "@/lib/axiosInstance";
 import Cookies from "js-cookie";
 import type { FieldValues } from "react-hook-form";
 import { jwtDecode } from "jwt-decode";
+import type { TUserData } from "@/types/auth";
 
 export const registerUser = async (userData: FieldValues) => {
   try {
@@ -113,5 +114,45 @@ export const getAllUsers = async () => {
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+export const updateMemberRole = async (
+  payload: Partial<TUserData>
+): Promise<any> => {
+  try {
+    const { data } = await axiosInstance.patch(
+      `/auth/users/${payload._id}/role`,
+      payload
+    );
+
+    return data;
+  } catch (error: any) {
+    throw new Error("Failed to update role");
+  }
+};
+
+export const updateMemberStatus = async (
+  payload: Partial<TUserData>
+): Promise<any> => {
+  try {
+    const { data } = await axiosInstance.patch(
+      `/auth/users/${payload._id}/status`,
+      payload
+    );
+
+    return data;
+  } catch (error: any) {
+    throw new Error("Failed to update status");
+  }
+};
+
+export const deleteUser = async (id: string): Promise<any> => {
+  try {
+    const { data } = await axiosInstance.delete(`/auth/users/${id}`);
+
+    return data;
+  } catch (error: any) {
+    throw new Error("Failed to delete user");
   }
 };

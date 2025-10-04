@@ -15,6 +15,18 @@ export const getAllTask = async () => {
   }
 };
 
+export const getMyTask = async (id: string) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `${import.meta.env.VITE_BASE_URL}/task?userId=${id}`
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const createTask = async (payload: Partial<TTask>): Promise<any> => {
   try {
     const { data } = await axiosInstance.post(

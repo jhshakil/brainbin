@@ -29,7 +29,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 // ---------- Context ----------
 interface AuthContextType extends AuthState {
   setUser: (user: TUserData | null) => void;
-  setAllUsers: (users: TUserData[]) => void; // ✅ expose dispatcher
+  setAllUsers: (users: TUserData[]) => void;
+  fetchAllUsers: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,10 +42,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     allUsers: [], // ✅ initial
   });
 
-  const fetchUserAndUsers = async () => {
+  const fetchUser = async () => {
     const user = await getCurrentUser();
     setUser(user);
-
+  };
+  const fetchAllUsers = async () => {
     const all = await getAllUsers();
     if (all.success) {
       setAllUsers(all?.data);
@@ -52,7 +54,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    fetchUserAndUsers();
+    fetchUser();
+    fetchAllUsers();
   }, []);
 
   const setUser = (user: TUserData | null) =>
@@ -62,7 +65,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     dispatch({ type: "SET_ALL_USER", payload: users });
 
   return (
-    <AuthContext.Provider value={{ ...state, setUser, setAllUsers }}>
+    <AuthContext.Provider
+      value={{ ...state, setUser, setAllUsers, fetchAllUsers }}
+    >
       {children}
     </AuthContext.Provider>
   );
