@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
+import { getCurrentUser } from "@/services/AuthService";
 import type { TUserData } from "@/types/auth";
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 
 // ---------- State ----------
 interface AuthState {
@@ -33,6 +34,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
   });
+
+  const handleUser = async () => {
+    const user = await getCurrentUser();
+
+    setUser(user);
+  };
+
+  useEffect(() => {
+    handleUser();
+  }, []);
 
   const setUser = (user: TUserData | null) =>
     dispatch({ type: "SET_USER", payload: user });

@@ -19,12 +19,6 @@ import SidebarLogo from "./SidebarLogo";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "Jahid",
-    email: "jhshakil11275@gmail.com",
-    avatar: "",
-  },
-
   navMain: [
     {
       title: "Dashboard",
@@ -60,7 +54,7 @@ const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

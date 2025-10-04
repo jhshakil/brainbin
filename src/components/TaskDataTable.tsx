@@ -78,9 +78,19 @@ export const columns: ColumnDef<Task>[] = [
       return (
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="link" className="p-0 pl-4 text-left">
-              {task.title}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                className="p-0 pl-4 text-left font-medium text-primary group-hover:underline"
+              >
+                {task.title}
+              </Button>
+
+              {/* Hidden until row hover */}
+              <span className="text-sm text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                View
+              </span>
+            </div>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -225,7 +235,7 @@ const TaskDataTable = () => {
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="group hover:bg-muted/50">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
