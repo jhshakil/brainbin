@@ -9,15 +9,20 @@ const AllTasks = () => {
 
   useEffect(() => {
     if (updateState) {
-      fetchTasks();
+      fetchTasks(allQuery);
       setUpdateState(false);
     }
   }, [updateState]);
 
+  useEffect(() => {
+    fetchTasks(allQuery);
+    setUpdateState(false);
+  }, [allQuery]);
+
   return (
     <div>
       <TaskDataTable
-        tasks={allTasks}
+        tasks={allTasks.data}
         setUpdateState={setUpdateState}
         setAllQuery={setAllQuery}
       />

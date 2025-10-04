@@ -1,18 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer } from "react";
 import { getAllTask, getMyTask } from "@/services/TaskServices";
-import type { TTask } from "@/types/task";
+import type { TTaskQueryParams, TTasks } from "@/types/task";
 
 // ---------- State ----------
 interface TaskState {
-  allTasks: TTask[];
-  myTasks: TTask[];
+  allTasks: TTasks;
+  myTasks: TTasks;
 }
 
 // ---------- Actions ----------
 type TaskAction =
-  | { type: "SET_ALL_TASKS"; payload: TTask[] }
-  | { type: "SET_MY_TASKS"; payload: TTask[] };
+  | { type: "SET_ALL_TASKS"; payload: TTasks }
+  | { type: "SET_MY_TASKS"; payload: TTasks };
 
 // ---------- Reducer ----------
 const taskReducer = (state: TaskState, action: TaskAction): TaskState => {
@@ -28,10 +28,10 @@ const taskReducer = (state: TaskState, action: TaskAction): TaskState => {
 
 // ---------- Context ----------
 interface TaskContextType extends TaskState {
-  setAllTasks: (tasks: TTask[]) => void;
-  setMyTasks: (tasks: TTask[]) => void;
-  fetchTasks: () => Promise<void>;
-  fetchMyTasks: (userId: string) => Promise<void>;
+  setAllTasks: (tasks: TTasks) => void;
+  setMyTasks: (tasks: TTasks) => void;
+  fetchTasks: (query: TTaskQueryParams) => Promise<void>;
+  fetchMyTasks: (userId: string, query: TTaskQueryParams) => Promise<void>;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -39,20 +39,26 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 // ---------- Provider ----------
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(taskReducer, {
-    allTasks: [],
-    myTasks: [], // ✅ initial
+    allTasks: {
+      data: [],
+      meta: { total: 0, page: 1, per_page: 10, totalPages: 0 },
+    },
+    myTasks: {
+      data: [],
+      meta: { total: 0, page: 1, per_page: 10, totalPages: 0 },
+    },
   });
 
-  const setAllTasks = (tasks: TTask[]) =>
+  const setAllTasks = (tasks: TTasks) =>
     dispatch({ type: "SET_ALL_TASKS", payload: tasks });
 
-  const setMyTasks = (tasks: TTask[]) =>
+  const setMyTasks = (tasks: TTasks) =>
     dispatch({ type: "SET_MY_TASKS", payload: tasks });
 
   // fetch all tasks
-  const fetchTasks = async () => {
+  const fetchTasks = async (query: TTaskQueryParams) => {
     try {
-      const res = await getAllTask();
+      const res = await getAllTask(query);
       if (res?.success) {
         setAllTasks(res.data);
       }
@@ -62,9 +68,9 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // fetch my tasks (filtered by userId)
-  const fetchMyTasks = async (userId: string) => {
+  const fetchMyTasks = async (userId: string, query: TTaskQueryParams) => {
     try {
-      const res = await getMyTask(userId);
+      const res = await getMyTask({ id: userId, query });
       if (res?.success) {
         setMyTasks(res.data);
       }

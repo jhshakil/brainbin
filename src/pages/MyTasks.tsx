@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import TaskDataTable from "@/components/task/TaskDataTable";
 import { useAuth } from "@/context/auth.provider";
 import { useTask } from "@/context/task.provider";
@@ -7,23 +8,29 @@ const MyTasks = () => {
   const { myTasks, fetchMyTasks } = useTask();
   const { user } = useAuth();
   const [updateState, setUpdateState] = useState(true);
+  const [allQuery, setAllQuery] = useState({});
 
   useEffect(() => {
     if (user?.id) {
-      fetchMyTasks(user?.id);
+      fetchMyTasks(user.id, allQuery);
+      setUpdateState(false);
     }
-  }, [user]);
+  }, [user?.id, allQuery]);
 
   useEffect(() => {
     if (user?.id && updateState) {
-      fetchMyTasks(user?.id);
+      fetchMyTasks(user.id, allQuery);
       setUpdateState(false);
     }
-  }, [user, updateState]);
+  }, [updateState, user?.id]);
 
   return (
     <div>
-      <TaskDataTable tasks={myTasks} setUpdateState={setUpdateState} />
+      <TaskDataTable
+        tasks={myTasks.data}
+        setUpdateState={setUpdateState}
+        setAllQuery={setAllQuery}
+      />
     </div>
   );
 };

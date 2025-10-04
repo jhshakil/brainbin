@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -50,6 +50,8 @@ import { useAuth } from "@/context/auth.provider";
 import DeleteTaskConfirmation from "./DeleteTaskConfirmation";
 import { updateTask } from "@/services/TaskServices";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { debounce } from "@/lib/utils";
 
 type Props = {
   tasks: TTask[];
@@ -62,6 +64,13 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [taskData, setTaskData] = useState<TTask[]>(tasks);
 
+  // filters
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 5; // default page size
+
   const updateTaskStatus = async (taskId: string, newStatus: TStatus) => {
     setTaskData((prev) =>
       prev.map((task) =>
@@ -71,8 +80,18 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     const resData = await updateTask({ _id: taskId, status: newStatus });
     if (resData.success) {
       toast.success("Task status updated successfully");
+      setUpdateState(true);
     }
   };
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearch(value);
+        setPage(1);
+      }, 500),
+    []
+  );
 
   useEffect(() => {
     if (tasks) {
@@ -80,18 +99,31 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     }
   }, [tasks]);
 
+  // debounce wrapper for query updates
+  const debouncedSetQuery = useMemo(
+    () =>
+      debounce((q: Record<string, any>) => {
+        if (setAllQuery) setAllQuery(q);
+      }, 500),
+    [setAllQuery]
+  );
+
+  // handle filter + search change
+  useEffect(() => {
+    debouncedSetQuery({
+      search: search || undefined,
+      status: status === "all" ? undefined : status || undefined,
+      page,
+      per_page: limit,
+    });
+  }, [search, status, page]);
+
   const columns: ColumnDef<TTask>[] = [
-    // Title column
     {
       accessorKey: "title",
       header: () => <div className="pl-4 text-left">Title</div>,
-      cell: ({ row }) => {
-        const task = row.original;
-        return <div className="pl-4">{task.title}</div>;
-      },
+      cell: ({ row }) => <div className="pl-4">{row.original.title}</div>,
     },
-
-    // Details column with truncated text + View popup
     {
       accessorKey: "details",
       header: "Details",
@@ -132,7 +164,6 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         );
       },
     },
-    // Status column
     {
       accessorKey: "status",
       header: "Status",
@@ -157,8 +188,6 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         );
       },
     },
-
-    // Assign To column
     {
       accessorKey: "assignTo",
       header: "Assign To",
@@ -181,8 +210,6 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
         );
       },
     },
-
-    // Actions column
     {
       id: "actions",
       header: () => <div className="text-right pr-4">Actions</div>,
@@ -198,13 +225,8 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-                {/* Update Dialog */}
                 <UpdateTaskForm task={task} setUpdateState={setUpdateState} />
-
                 <DropdownMenuSeparator />
-
-                {/* Delete Dialog */}
                 <DeleteTaskConfirmation
                   taskId={task._id}
                   taskTitle={task.title}
@@ -224,14 +246,45 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getRowId: (row) => row._id, // use MongoDB _id
+    getRowId: (row) => row._id,
   });
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-end py-4">
-        <CreateTaskForm />
+      {/* Toolbar */}
+      <div className="flex items-center justify-between py-4 gap-2">
+        <CreateTaskForm setUpdateState={setUpdateState} />
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search by title..."
+            value={searchInput}
+            onChange={(e) => {
+              setSearchInput(e.target.value);
+              debouncedSearch(e.target.value);
+            }}
+            className="w-[200px]"
+          />
+          <Select
+            value={status}
+            onValueChange={(value) => {
+              setStatus(value);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="In Progress">In Progress</SelectItem>
+              <SelectItem value="Complete">Complete</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {/* Table */}
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -275,20 +328,23 @@ const TaskDataTable = ({ tasks, setUpdateState, setAllQuery }: Props) => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
         >
           Previous
         </Button>
+        <span className="text-sm">Page {page}</span>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          onClick={() => setPage((p) => p + 1)}
+          disabled={taskData.length < limit}
         >
           Next
         </Button>

@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useTask } from "@/context/task.provider";
 import { useState } from "react";
 import { createTask } from "@/services/TaskServices";
 import { useAuth } from "@/context/auth.provider";
@@ -44,9 +43,12 @@ const FormSchema = z.object({
   assignTo: z.string(),
 });
 
-const CreateTaskForm = () => {
+type Props = {
+  setUpdateState: (value: boolean) => void;
+};
+
+const CreateTaskForm = ({ setUpdateState }: Props) => {
   const { allUsers } = useAuth();
-  const { fetchTasks } = useTask();
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -61,10 +63,10 @@ const CreateTaskForm = () => {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const resData = await createTask(data);
     if (resData?.success) {
-      fetchTasks();
+      setUpdateState(true);
       setOpen(false);
       form.reset();
-      toast.success("Task deleted successfully");
+      toast.success("Task create successfully");
     }
   }
 
